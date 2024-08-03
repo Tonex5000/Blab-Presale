@@ -7,7 +7,6 @@ import HardCap from "./GetHardCap";
 import TotalRaised from "./TotalRaised";
 import Claim from  "./Claim";
 
-
 export default function Home() {
   const {
     enableWeb3,
@@ -17,17 +16,16 @@ export default function Home() {
     deactivateWeb3,
     chainId,
   } = useMoralis();
-
   const [showMessage, setShowMessage] = useState(false);
-  const [preferredChainId, setPreferredChainId] = useState("0x57");
+  const [preferredChainId, setPreferredChainId] = useState("0x38");
   const [isConnecting, setIsConnecting] = useState(false);
 
   // Call enableWeb3 when Connect button is clicked
   const handleConnectClick = async () => {
-    setIsConnecting(true); // Set connecting status to true
+    setIsConnecting(true);
     await enableWeb3();
     window.localStorage.setItem("connected", "injected");
-    setIsConnecting(false); // Set connecting status to false after connection is established
+    setIsConnecting(false);
   };
 
   useEffect(() => {
@@ -39,50 +37,40 @@ export default function Home() {
         console.log("Null account found");
       }
     });
-
     console.log("Connected chainId:", chainId);
     if (account && chainId) {
-      // Display "Hello world" after 10 seconds
       const timer = setTimeout(() => {
         setShowMessage(true);
-      }, 5000); // Changed delay to 10 seconds
-
+      }, 5000);
       return () => clearTimeout(timer);
     }
   }, [chainId, account]);
 
   const switchToPreferredNetwork = async () => {
     try {
-      // Check if the preferredChainId starts with "0x"
-      
-      // Check if the chainId matches the preferredChainId
       if (chainId !== preferredChainId) {
-        // Add the custom network using wallet_addEthereumChain
         await window.ethereum.request({
           method: "wallet_addEthereumChain",
           params: [{
-            chainId: "0x61",
-            chainName: "Binance Smart Chain Testnet",
+            chainId: "0x38",
+            chainName: "Binance Smart Chain Mainnet",
             nativeCurrency: {
               name: "BNB",
-              symbol: "tBNB",
+              symbol: "BNB",
               decimals: 18,
             },
-            rpcUrls: ["https://data-seed-prebsc-1-s1.binance.org:8545"],
-            blockExplorerUrls: ["https://testnet.bscscan.com"],
+            rpcUrls: ["https://bsc-dataseed.binance.org/"],
+            blockExplorerUrls: ["https://bscscan.com"],
           }],
         });
         
-        
-        // Switch to the preferred network
-        await Moralis.switchNetwork("0x61");
+        await Moralis.switchNetwork("0x38");
         console.log(`Switched to preferred network`);
       } else {
         console.log("Already connected to the preferred network");
       }
     } catch (error) {
       console.error("Error switching network:", error);
-      // Handle error (display error message, etc.)
     }
   };
 
@@ -95,14 +83,13 @@ export default function Home() {
       ) : (
         <button
           onClick={handleConnectClick}
-          disabled={isWeb3Enabled || isConnecting} // Disable button while connecting
+          disabled={isWeb3Enabled || isConnecting}
         >
-          {isConnecting ? "Connecting..." : "Connect"} {/* Show "Connecting..." text while connecting */}
+          {isConnecting ? "Connecting..." : "Connect"}
         </button>
       )}
-
       {showMessage ? (
-        chainId === "0x61" ? (
+        chainId === "0x38" ? (
           <div>
             <Stage />
             <Price />
@@ -118,9 +105,3 @@ export default function Home() {
     </div>
   );
 }
-
-
-
-
-
-
